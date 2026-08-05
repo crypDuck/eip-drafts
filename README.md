@@ -9,7 +9,7 @@ These are complementary ideas, although they would be most effective if both pro
 | # | Title | Status | Link |
 |---|-------|--------|------|
 | 1 | Native ETH as ERC-20 Precompile | Draft | [01-native-eth-as-erc20-precompile.md](./01-native-eth-as-erc20-precompile.md) |
-| 2 | Preferential Gas Costs for Native ETH Operations | Draft | [02-preferential-gas-costs-for-native-value-transfers.md](./02-preferential-gas-costs-for-native-eth-operations.md) |
+| 2 | Preferential Gas Costs for Native ETH Operations | Draft | [02-preferential-gas-costs-for-native-eth-operations.md](./02-preferential-gas-costs-for-native-eth-operations.md) |
 
 ## Motivation
 
