@@ -1,8 +1,8 @@
 ---
 title: Native ETH as ERC-20 Precompile
 description: Introduce a system contract at address 0x20 that exposes native ETH balances through a standard ERC-20 (and ERC-2612) interface, with a preferential gas schedule that makes the native path cheaper than ordinary ERC-20 tokens or wrapped ETH.
-author: [Author]
-discussions-to: [to be filled]
+author: crypDuck
+discussions-to: https://github.com/crypDuck/eip-drafts/issues
 status: Draft
 type: Standards Track
 category: Core
