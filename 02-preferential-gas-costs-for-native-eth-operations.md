@@ -15,6 +15,8 @@ related: Native ETH as ERC-20 Precompile
 
 This EIP applies a multiplicative preferential factor to the value-transfer / account-write gas component of `CALL`, `CALLCODE`, `CREATE` and `CREATE2` when `value > 0`, and to both the cold and warm access costs of `BALANCE`. The change makes operations that move or query native ETH balances cheaper relative to the same operations on other tokens, reinforcing ETH as the preferred medium of exchange, unit of account, and digital reserve asset.
 
+The related minimal-cost opcodes `SELFBALANCE` (currently 5 gas) and `CALLVALUE` (currently 2 gas) are noted for completeness; whether the same factor should also apply to them is left open.
+
 ## Motivation
 
 A plain native ETH transfer costs 21 000 gas. A typical ERC-20 transfer costs 45 000–65 000 gas. Balance queries via `BALANCE` are also cheaper than an ERC-20 `balanceOf`. These structural differences already favour native ETH for simple top-level transfers.
@@ -40,13 +42,17 @@ The factor is large enough to be economically consequential for high-frequency i
 
 Zero-value calls receive no discount under this EIP.
 
+`SELFBALANCE` and `CALLVALUE` are the other minimal-cost native-value / balance-related opcodes (currently 5 gas and 2 gas respectively). They are recorded here for completeness. Whether `ETH_BALANCE_ACCESS_FACTOR` (or an equivalent factor) should also be applied to them is left open; the absolute saving would be only ~1–1.5 gas.
+
 ### Rationale for the 0.75 factor
 
 A 25 % reduction on the value-transfer component (~2 250 gas absolute saving on a ~9 000 gas component) is large enough to be economically consequential for frequent internal transfers and settlement, yet small enough that two native transfers remain more expensive than one typical ERC-20 transfer. The factor is deliberately round and easy for clients to implement.
 
 ## Rationale
 
-The existing 21 000 gas baseline already privileges top-level native transfers. The additional ~9 000 gas surcharge on internal value-bearing calls currently limits that advantage. A 0.75 factor on the surcharge, plus a matching reduction for `BALANCE` (both cold and warm), extends the privilege cleanly to all native-ETH balance operations.
+The existing 21 000 gas baseline already privileges top-level native transfers. The additional ~9 000 gas surcharge on internal value-bearing calls currently limits that advantage. A 0.75 factor on the surcharge, plus a matching reduction for `BALANCE` (both cold and warm), extends the privilege cleanly to the primary native-ETH balance operations.
+
+The ultra-cheap context opcodes `SELFBALANCE` (5 gas) and `CALLVALUE` (2 gas) are noted for completeness as the natural companions to `BALANCE`. Because any factor applied to them yields only a few gas of absolute saving, the decision whether to include them is left open rather than mandated in the core rules.
 
 Local rules based solely on opcode identity and the presence of non-zero value are preferred because they are unambiguous, cheap to evaluate, and free of consensus risk. A runtime analysis of call-frame composition would be ambiguous, expensive and itself gameable.
 
@@ -77,6 +83,7 @@ Clients MUST update gas-cost tables and metering logic for the affected opcodes.
 ## Open Questions
 
 - Final confirmation of the 0.75 factor by client teams and AllCoreDevs after benchmarking against concurrent state-access changes (e.g. EIP-8038).
+- Whether to apply `ETH_BALANCE_ACCESS_FACTOR` (or an equivalent) to `SELFBALANCE` and/or `CALLVALUE` for formal completeness of native balance / value-context operations. Absolute impact is negligible (~1–1.5 gas); the economically meaningful discounts remain the value-transfer component and `BALANCE`.
 - Residual value handling in `SELFDESTRUCT` (if still relevant): optional application of the same factor for consistency; otherwise leave unchanged.
 
 ## References
@@ -87,4 +94,4 @@ Clients MUST update gas-cost tables and metering logic for the affected opcodes.
 4. EIP-8038: State-access gas cost update. https://eips.ethereum.org/EIPS/eip-8038  
 5. Native ETH as ERC-20 Precompile (related proposal that defines a preferential schedule for the system contract at address 0x20).  
 6. ERC-20. https://eips.ethereum.org/EIPS/eip-20  
-7. EIP-1559. https://eips.ethereum.org/EIPS/eip-1559  
+7. EIP-1559. https://eips.ethereum.org/EIPS/eip-1559
