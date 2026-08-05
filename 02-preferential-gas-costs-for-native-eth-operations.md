@@ -98,3 +98,7 @@ Clients MUST update gas-cost tables and metering logic for the affected opcodes.
 5. Native ETH as ERC-20 Precompile (related proposal that defines a preferential schedule for the system contract at address 0x20).  
 6. ERC-20. https://eips.ethereum.org/EIPS/eip-20  
 7. EIP-1559. https://eips.ethereum.org/EIPS/eip-1559  
+
+## Copyright
+
+Copyright and related rights waived via [CC0](https://creativecommons.org/publicdomain/zero/1.0/).
