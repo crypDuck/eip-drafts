@@ -2,7 +2,7 @@
 title: Preferential Gas Costs for Native ETH Operations
 description: Apply a preferential gas factor to the value-transfer component of CALL/CREATE-family opcodes and to BALANCE access costs, reinforcing native ETH as the preferred medium of exchange and unit of account.
 author: crypDuck
-discussions-to: https://github.com/crypDuck/eip-drafts/issues
+discussions-to: https://ethereum-magicians.org/t/preferential-gas-costs-for-native-eth-operations-draft-for-feedback/29302
 status: Draft
 type: Standards Track
 category: Core
