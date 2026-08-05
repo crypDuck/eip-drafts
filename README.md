@@ -2,7 +2,7 @@
 
 Early draft proposals exploring ways to make native ETH the most natural and preferred asset inside the EVM ecosystem.
 
-These are independent ideas. They are published here as working drafts for community feedback before any formal Ethereum Magicians discussion or EIP submission.
+These are complementary ideas, although they would be most effective if both proposals were enacted. They are published here as working drafts for community feedback before any formal Ethereum Magicians discussion or EIP submission.
 
 ## The Drafts
 
