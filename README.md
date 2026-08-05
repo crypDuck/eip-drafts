@@ -13,7 +13,7 @@ These are independent ideas. They are published here as working drafts for commu
 
 ## Motivation
 
-The trigger for writing these proposals was the appearance of EIP-8361 "Tapered Issuance Burn". While agreeing with the need for curbing staking intermediaries, I do not think the EIP can achieve those goals. Therefore, in the spirit of "being the change I want to see" and channeling my objection into something constructive, I hereby put forward ideas of how to grow the pie for Ethereum instead of getting lost in discussions about redistributing the existing pie.
+In the spirit of "being the change I want to see" and channeling my ideas into actionable items instead of hoping for others to understand and take them up for me, I hereby put forward ideas of how to grow the pie for Ethereum instead of getting lost in discussions about redistributing the existing pie.
 
 The long-term motivation is a successful, resilient Ethereum network with ETH as its money. The starting point is the question: "What was I hoping to get when buying ETH?". This includes making ETH the natural reserve currency of the digital economy by applying monetary properties and principles of TradFi reserve currencies to ETH.
 
