@@ -20,7 +20,9 @@ These are independent ideas. They are published here as working drafts for commu
 The trigger for writing these proposals was the appearance of EIP-8361 "Tapered Issuance Burn". While agreeing with the need for curbing staking intermediaries, I do not think the EIP can achieve those goals.
 Therefore, in the spirit of "being the change I want to see" and channeling my objection into something constructive, I hereby put forward my own ideas of how to grow the pie for Ethereum instead of getting
 lost in discussions about redistributing the existing pie.
-As a home and solo staker, as well as node operator for Rocket Pool and Nodeset, my long-term motivation is the creation of a successful, resilient network Ethereum with ETH as its money. For me, this means
+
+As a home and solo staker, as well as node operator for Rocket Pool and Nodeset, my long-term motivation is the creation of a successful, resilient network Ethereum with ETH as its money.
+The starting point is the question: "What was I hoping to get when buying ETH?". For me, this means
 
 - Making ETH the natural reserve currency of the digital economy by applying monetary properties and principles of TradFi reserve currencies to ETH
 - Promoting incentive mechanisms to further the decentralization of the Ethereum validator set in "peacetime" to prepare the network for adverse scenarios
