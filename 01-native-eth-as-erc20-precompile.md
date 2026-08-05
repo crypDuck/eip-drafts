@@ -1,6 +1,8 @@
 ---
 title: Native ETH as ERC-20 Precompile
-description: Introduce a precompile that exposes native ETH balances through a standard ERC-20 (and ERC-2612) interface, eliminating most wrapping friction while preserving native semantics.
+description: Introduce a system contract at address 0x20 that exposes native ETH balances through a standard ERC-20 (and ERC-2612) interface, with a preferential gas schedule that makes the native path cheaper than ordinary ERC-20 tokens or wrapped ETH.
+author: [Author]
+discussions-to: [to be filled]
 status: Draft
 type: Standards Track
 category: Core
@@ -10,7 +12,7 @@ requires: 20, 2612, 7528
 
 ## Abstract
 
-This EIP introduces a system contract at a fixed address that implements the ERC-20 and ERC-2612 interfaces against native ETH balances. Transfers through the contract move real account balances, emit standard `Transfer` events, and never execute recipient code. The change removes the need for most WETH wrapping while preserving native ETH semantics for gas payment and value transfers.
+This EIP introduces a system contract at address `0x20` that implements the ERC-20 and ERC-2612 interfaces against native ETH balances. Transfers through the contract move real account balances, emit standard `Transfer` events, and never execute recipient code. The methods are given a preferential gas schedule so that using native ETH via the standard ERC-20 interface is cheaper than the same operations on ordinary ERC-20 tokens or on wrapped ETH. The change removes the need for most WETH wrapping while preserving native ETH semantics for gas payment and value transfers.
 
 ## Motivation
 
@@ -21,6 +23,8 @@ A protocol-level ERC-20 view of native balances would:
 - Make ETH the seamless default asset wherever an ERC-20 interface is expected.
 - Reduce unnecessary wrapping traffic and the associated state growth.
 - Complement the existing address convention of ERC-7528 (`0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE`).
+
+Because the system contract updates native balances directly (no token-balance mapping SSTOREs), its methods can be priced substantially lower than ordinary ERC-20 operations while remaining faithful to real resource costs. This creates a structural preference for native ETH as the unit of account and medium of exchange.
 
 ## Relation to Prior Work
 
@@ -60,6 +64,19 @@ The contract MUST implement the full ERC-20 interface plus ERC-2612 `permit`. In
 
 Legacy contracts must call `optIn()`; contracts created after the fork are opted in by default.
 
+### Gas Schedule
+
+The methods of the system contract are priced preferentially so that the native-ETH path is cheaper than the same operation on an ordinary ERC-20 or on WETH. Concrete numbers (illustrative; final values to be confirmed by client teams):
+
+| Method                        | Target gas (warm accounts) | Principle |
+|-------------------------------|----------------------------|---------|
+| `balanceOf` / `totalSupply`   | Same as native `BALANCE` (currently 100 warm / 2 600 cold) | Direct native balance read |
+| `transfer` / `transferFrom`   | 15 000 – 20 000            | Native value-write component + `Transfer` event (LOG3) + minimal dispatch. No token-balance SSTOREs. |
+| `approve` / `permit`          | 20 000 – 30 000            | Reflects the storage write for allowance / nonce; competitive with well-optimised ERC-20s |
+| `allowance`                   | Same as a warm SLOAD       | Simple storage read |
+
+These targets are deliberately lower than typical ERC-20 costs (45 000–65 000 for a transfer) because the system contract updates native balances directly. The resulting preference is structural: using ETH via the standard ERC-20 interface is cheaper than using any other token or a wrapped representation for the same economic effect.
+
 ## Rationale
 
 A fixed-address system contract can enforce the balance invariant with low overhead while providing the storage needed for allowances and nonces. Classic pure precompiles cannot hold this state without non-standard client mechanisms; a system contract follows established L1 patterns (deposit contract, EIP-4788 beacon roots) and is simpler for multi-client implementation.
@@ -72,6 +89,8 @@ Returning the conventional `"Ether"` / `"ETH"` / `18` values and a proper `DOMAI
 
 Value-bearing calls to `0x20` revert so the system contract cannot become an ownerless ETH sink. Opt-in is defined as a persistent property of the address itself; temporary code under EIP-7702 does not change it.
 
+The preferential gas schedule is an intentional policy choice that reinforces ETH as the preferred medium of exchange and unit of account. Because the contract avoids token-balance storage writes, the lower numbers remain faithful to real resource consumption while still creating a clear cost advantage over ordinary ERC-20 tokens and WETH.
+
 ## Security Considerations
 
 - Transfers never execute recipient code, eliminating the classic callback reentrancy vector. Contracts that previously special-cased native value receipt versus ERC-20 receipt should still be reviewed for remaining behavioural differences.
@@ -79,7 +98,7 @@ Value-bearing calls to `0x20` revert so the system contract cannot become an own
 - The balance invariant must hold at all times for participating accounts, including under temporary code, self-transfers, and edge cases involving the system contract itself.
 - Value-bearing calls to `0x20` MUST revert.
 - Standard ERC-20 allowance race conditions and permit signature considerations apply; high-value native balances make them more critical.
-- Storage-writing operations (`approve`, `transferFrom`, `permit`) should be priced to discourage griefing while remaining competitive with ordinary ERC-20s.
+- Storage-writing operations (`approve`, `transferFrom`, `permit`) are priced to discourage griefing while remaining competitive with ordinary ERC-20s.
 
 ## Backward Compatibility
 
@@ -87,7 +106,7 @@ The change is consensus-breaking and requires a hard fork. Existing contracts th
 
 ## Open Questions / Remaining Decisions
 
-- Exact gas schedule for the methods (principle: `balanceOf` close to BALANCE; `transfer` close to native + event; `approve`/`permit` optimised but reflecting storage cost). Final numbers left to client implementers.
+- Final confirmation of the exact gas constants by client teams and AllCoreDevs (targets above are illustrative but intentional).
 - Final confirmation of address `0x20` by AllCoreDevs.
 
 ## References
