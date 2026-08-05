@@ -14,6 +14,8 @@ requires: 20, 2612, 7528
 
 This EIP introduces a system contract at address `0x20` that implements the ERC-20 and ERC-2612 interfaces against native ETH balances. Transfers through the contract move real account balances, emit standard `Transfer` events, and never execute recipient code. The methods are given a preferential gas schedule so that using native ETH via the standard ERC-20 interface is cheaper than the same operations on ordinary ERC-20 tokens or on wrapped ETH. The change removes the need for most WETH wrapping while preserving native ETH semantics for gas payment and value transfers.
 
+Although the title retains the familiar term “precompile” for continuity with prior discussion and existing implementations, the facility is implemented as a stateful system contract. State is required to store allowances and nonces.
+
 ## Motivation
 
 Native ETH and ERC-20 tokens expose different interfaces. Contracts that want to treat ETH uniformly with other tokens must either special-case native transfers or route through a wrapped representation (most commonly WETH9). Wrapping creates ongoing gas overhead, extra transactions, and state growth; WETH has historically ranked among the highest gas consumers on mainnet.<sup>1</sup>
@@ -28,7 +30,7 @@ Because the system contract updates native balances directly (no token-balance m
 
 ## Relation to Prior Work
 
-An “ETH as ERC-20 precompile” was discussed on Ethereum Magicians in late 2022 (https://ethereum-magicians.org/t/eip-eth-as-erc20-precompile/12095). It was never assigned an EIP number and received limited engagement (mainly on function-dispatch complexity and gas pricing). It stalled without strong conceptual objections. An earlier related idea appeared in 2019.
+An “ETH as ERC-20 precompile” was discussed on Ethereum Magicians in late 2022 [](https://ethereum-magicians.org/t/eip-eth-as-erc20-precompile/12095). It was never assigned an EIP number and received limited engagement (mainly on function-dispatch complexity and gas pricing). It stalled without strong conceptual objections. An earlier related idea appeared in 2019.
 
 This proposal revives the core idea and updates it for current account-abstraction expectations (EIP-7702, paymasters), explicit ERC-2612 support, and the finalized ERC-7528 address convention. The opt-in requirement for pre-activation contracts is retained. Evmos previously shipped a similar native-token-as-ERC-20 precompile.
 
@@ -66,7 +68,7 @@ Legacy contracts must call `optIn()`; contracts created after the fork are opted
 
 ### Gas Schedule
 
-The methods of the system contract are priced preferentially so that the native-ETH path is cheaper than the same operation on an ordinary ERC-20 or on WETH. Concrete numbers (illustrative; final values to be confirmed by client teams):
+The methods of the system contract are priced preferentially so that the native-ETH path is cheaper than the same operation on an ordinary ERC-20 or on WETH. Concrete numbers (illustrative; final values to be confirmed by client teams and AllCoreDevs):
 
 | Method                        | Target gas (warm accounts) | Principle |
 |-------------------------------|----------------------------|---------|
@@ -76,6 +78,8 @@ The methods of the system contract are priced preferentially so that the native-
 | `allowance`                   | Same as a warm SLOAD       | Simple storage read |
 
 These targets are deliberately lower than typical ERC-20 costs (45 000–65 000 for a transfer) because the system contract updates native balances directly. The resulting preference is structural: using ETH via the standard ERC-20 interface is cheaper than using any other token or a wrapped representation for the same economic effect.
+
+The schedule above is independent of, and complementary to, the Preferential Gas Costs for Native ETH Operations EIP, which applies factors to the general native opcodes (`CALL`/`CREATE` family value-transfer component and `BALANCE`).
 
 ## Rationale
 
@@ -115,8 +119,13 @@ The change is consensus-breaking and requires a hard fork. Existing contracts th
 2. ERC-7528: ETH (Native Asset) Address Convention (Final). https://eips.ethereum.org/EIPS/eip-7528
 3. ERC-20: Token Standard. https://eips.ethereum.org/EIPS/eip-20
 4. ERC-2612: Permit Extension for EIP-20 Signed Approvals. https://eips.ethereum.org/EIPS/eip-2612
-5. WETH9 canonical contract: https://etherscan.io/address/0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2
-6. Evmos native-token-as-ERC20 precompile (precedent): https://github.com/evmos/evmos/blob/main/precompiles/werc20/werc20.go
+5. WETH9 canonical contract. https://etherscan.io/address/0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2
+6. Evmos native-token-as-ERC20 precompile (precedent). https://github.com/evmos/evmos/blob/main/precompiles/werc20/werc20.go
 7. EIP-7702: Set Code for EOAs. https://eips.ethereum.org/EIPS/eip-7702
-8. Earlier related discussion (2019): https://ethereum-magicians.org/t/add-to-ether-the-erc20-token-logics-get-rid-of-weth/3659
+8. Earlier related discussion (2019). https://ethereum-magicians.org/t/add-to-ether-the-erc20-token-logics-get-rid-of-weth/3659
 9. EIP-7708: ETH transfers emit a log (Review). https://eips.ethereum.org/EIPS/eip-7708 — complementary proposal for system-level Transfer-style logs on all ETH value transfers.
+10. Preferential Gas Costs for Native ETH Operations (companion proposal that applies preferential factors to the general native opcodes).
+
+## Copyright
+
+Copyright and related rights waived via [CC0](https://creativecommons.org/publicdomain/zero/1.0/).
