@@ -30,7 +30,7 @@ Because the system contract updates native balances directly (no token-balance m
 
 ## Relation to Prior Work
 
-An “ETH as ERC-20 precompile” was discussed on Ethereum Magicians in late 2022 [](https://ethereum-magicians.org/t/eip-eth-as-erc20-precompile/12095). It was never assigned an EIP number and received limited engagement (mainly on function-dispatch complexity and gas pricing). It stalled without strong conceptual objections. An earlier related idea appeared in 2019.
+An “ETH as ERC-20 precompile” was discussed on Ethereum Magicians in late 2022 (https://ethereum-magicians.org/t/eip-eth-as-erc20-precompile/12095). It was never assigned an EIP number and received limited engagement (mainly on function-dispatch complexity and gas pricing). It stalled without strong conceptual objections. An earlier related idea appeared in 2019.
 
 This proposal revives the core idea and updates it for current account-abstraction expectations (EIP-7702, paymasters), explicit ERC-2612 support, and the finalized ERC-7528 address convention. The opt-in requirement for pre-activation contracts is retained. Evmos previously shipped a similar native-token-as-ERC-20 precompile.
 
