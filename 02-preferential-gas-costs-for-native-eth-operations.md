@@ -13,13 +13,13 @@ related: Native ETH as ERC-20 Precompile
 
 ## Abstract
 
-This EIP applies a multiplicative preferential factor to the value-transfer / account-write gas component of `CALL`, `CALLCODE`, `CREATE` and `CREATE2` when `value > 0`, and to both the cold and warm access costs of `BALANCE`. The change makes operations that move or query native ETH balances cheaper relative to the same operations on other tokens, reinforcing ETH as the preferred medium of exchange, unit of account, and digital reserve asset.
+This EIP applies a multiplicative preferential factor to the value-transfer gas component of `CALL`, `CALLCODE`, `CREATE` and `CREATE2` when `value > 0`, and to both the cold and warm access costs of `BALANCE`. The change makes operations that move or query native ETH balances cheaper relative to the same operations on other tokens, reinforcing ETH as the preferred medium of exchange, unit of account, and digital reserve asset.
 
 ## Motivation
 
 A plain native ETH transfer costs 21 000 gas. A typical ERC-20 transfer costs 45 000–65 000 gas. Balance queries via `BALANCE` are also cheaper than an ERC-20 `balanceOf`. These structural differences already favour native ETH for simple top-level transfers.
 
-Inside contracts, however, a value-bearing `CALL` or `CREATE` currently pays an additional ~9 000 gas surcharge (the value-transfer / account-write component). This EIP reduces that surcharge by a factor of 0.75 and applies a matching reduction to the access cost of `BALANCE`. As a result, the same economic operation performed with native ETH becomes cheaper than the identical operation performed with other tokens or with wrapped ETH.
+Inside contracts, however, a value-bearing `CALL` or `CREATE` currently pays an additional ~9 000 gas surcharge — the value-transfer component historically known as the Yellow Paper’s `G_callvalue` and, under the decomposition in EIP-8038, corresponding to `ACCOUNT_WRITE + CALL_STIPEND`. This EIP reduces that surcharge by a factor of 0.75 and applies a matching reduction to the access cost of `BALANCE`. As a result, the same economic operation performed with native ETH becomes cheaper than the identical operation performed with other tokens or with wrapped ETH.
 
 The factor is large enough to be economically consequential for high-frequency internal transfers and settlement flows, while remaining small enough that pure substitution constructions stay uneconomic.
 
@@ -28,13 +28,22 @@ The factor is large enough to be economically consequential for high-frequency i
 ### Parameters
 
 - `ETH_VALUE_TRANSFER_FACTOR` = 0.75  
-  Multiplicative factor applied exclusively to the value-transfer / account-write gas component of eligible opcodes when `value > 0`.
+  Multiplicative factor applied exclusively to the value-transfer gas component of eligible opcodes when `value > 0`.
 - `ETH_BALANCE_ACCESS_FACTOR` = 0.75  
   Multiplicative factor applied to both the cold and warm account-access gas costs of `BALANCE`.
 
+### Definition of the value-transfer component
+
+The value-transfer gas component is the portion of gas charged specifically for a non-zero ETH value transfer.  
+
+- Historically this is the Yellow Paper’s `G_callvalue` (9 000).  
+- Under the state-access decomposition of EIP-8038 it corresponds to `ACCOUNT_WRITE + CALL_STIPEND`, where `CALL_STIPEND` (2 300) remains available to the callee and `ACCOUNT_WRITE` prices the write to the recipient’s balance leaf.  
+
+The factor is applied only to this component. Base call costs, memory expansion, code execution, cold/warm account access (except for the explicit `BALANCE` rule below), and all other metering remain unchanged.
+
 ### Rules
 
-1. For `CALL`, `CALLCODE`, `CREATE` and `CREATE2`: when `value > 0`, multiply the value-transfer / account-write gas component by `ETH_VALUE_TRANSFER_FACTOR`. All other costs remain unchanged. `DELEGATECALL` and `STATICCALL` never transfer value and are unaffected.
+1. For `CALL`, `CALLCODE`, `CREATE` and `CREATE2`: when `value > 0`, multiply the value-transfer gas component (as defined above) by `ETH_VALUE_TRANSFER_FACTOR`. All other costs remain unchanged. `DELEGATECALL` and `STATICCALL` never transfer value and are unaffected.
 2. For `BALANCE`: multiply both the cold-account-access cost and the warm-account-access cost by `ETH_BALANCE_ACCESS_FACTOR`.
 3. The factor is applied when the relevant component is charged. Normal EIP-3529 refund rules then apply to the resulting gas used.
 
@@ -46,7 +55,7 @@ A 25 % reduction on the value-transfer component (~2 250 gas absolute saving on 
 
 ## Rationale
 
-The existing 21 000 gas baseline already privileges top-level native transfers. The additional ~9 000 gas surcharge on internal value-bearing calls currently limits that advantage. A 0.75 factor on the surcharge, plus a matching reduction for `BALANCE` (both cold and warm), extends the privilege cleanly to the primary native-ETH balance operations.
+The existing 21 000 gas baseline already privileges top-level native transfers. The additional ~9 000 gas surcharge on internal value-bearing calls currently limits that advantage. A 0.75 factor on the value-transfer component, plus a matching reduction for `BALANCE` (both cold and warm), extends the privilege cleanly to the primary native-ETH balance operations.
 
 Local rules based solely on opcode identity and the presence of non-zero value are preferred because they are unambiguous, cheap to evaluate, and free of consensus risk. A runtime analysis of call-frame composition would be ambiguous, expensive and itself gameable.
 
