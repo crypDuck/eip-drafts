@@ -19,12 +19,12 @@ The long-term motivation is a successful, resilient Ethereum network with ETH as
 
 Reserve currencies in traditional finance derive their dominant status from a set of reinforcing properties:
 
-- Deep and highly liquid markets — especially for safe, trusted assets
-- Strong network effects that make it the default unit of account, medium of exchange, and pricing standard — effects that, once established, tend to persist and deepen over time
+- Deep and highly liquid markets
+- Strong network effects that make it the default unit of account, medium of exchange, and pricing standard - effects that, once established, tend to persist and deepen over time
 - Institutional credibility, stability and rule of law that underpin long-term trust
 - Safe-haven characteristics that attract capital in times of stress
 
-The U.S. Dollar illustrates this clearly: it is not treated as one currency among many; it receives preferential treatment across global trade, FX reserves, commodity markets, and capital flows precisely because of these attributes. Transposed to Ethereum, the same logic requires that ETH be deliberately elevated beyond the status of “just another ERC-20.” At present, native ETH is in important respects less convenient than a typical ERC-20 token (it lacks a uniform interface, forces special-casing or wrapping, and therefore carries friction that pure tokens do not). For ETH to function as the reserve asset of the digital economy it needs protocol-level preferential treatment — seamless ERC-20 compatibility without sacrificing native advantages, and relatively lower costs for value-moving operations that use ETH — so that users, protocols, and markets naturally prefer it over any other token.
+The U.S. Dollar illustrates this clearly: it is not treated as one currency among many; it receives preferential treatment across global trade, FX reserves, commodity markets, and capital flows precisely because of these attributes. Transposed to Ethereum, the same logic requires that ETH be deliberately elevated beyond the status of “just another ERC-20.” At present, native ETH is in important respects less convenient than a typical ERC-20 token (it lacks a uniform interface, forces special-casing or wrapping, and therefore carries friction that pure tokens do not). For ETH to function as the reserve asset of the digital economy it needs protocol-level preferential treatment - seamless ERC-20 compatibility without sacrificing native advantages, and relatively lower costs for value-moving operations that use ETH - so that users, protocols, and markets naturally prefer it over any other token.
 
 Advancing the structural resilience and decentralization of the Ethereum validator set remains desirable. Substantial deliberations on continuous incentive mechanisms that could reward diversity and resilience properties were undertaken. After examination of prior art, practicality, residual gameability, and the difficulty of producing a crisp, high-traction design, **no EIP is being proposed in that direction at this time**.
 
