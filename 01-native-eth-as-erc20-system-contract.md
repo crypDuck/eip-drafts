@@ -1,5 +1,5 @@
 ---
-title: Native ETH as ERC-20 Precompile
+title: Native ETH as ERC-20 System Contract
 description: Introduce a system contract at address 0x20 that exposes native ETH balances through a standard ERC-20 (and ERC-2612) interface, with a preferential gas schedule that makes the native path cheaper than ordinary ERC-20 tokens or wrapped ETH.
 author: crypDuck
 discussions-to: https://ethereum-magicians.org/t/native-eth-as-erc-20-system-contract-draft-for-feedback/29301
@@ -14,7 +14,7 @@ requires: 20, 2612, 7528
 
 This EIP introduces a system contract at address `0x20` that implements the ERC-20 and ERC-2612 interfaces against native ETH balances. Transfers through the contract move real account balances, emit standard `Transfer` events, and never execute recipient code. The methods are given a preferential gas schedule so that using native ETH via the standard ERC-20 interface is cheaper than the same operations on ordinary ERC-20 tokens or on wrapped ETH. The change removes the need for most WETH wrapping while preserving native ETH semantics for gas payment and value transfers.
 
-Although the title retains the familiar term “precompile” for continuity with prior discussion and existing implementations, the facility is implemented as a stateful system contract. State is required to store allowances and nonces.
+Earlier discussions used the term “precompile” for this idea. This proposal deliberately specifies a stateful system contract rather than a precompile: state is required to store allowances and nonces, and no new precompile is added to the protocol.
 
 ## Motivation
 

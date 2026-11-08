@@ -8,7 +8,7 @@ type: Standards Track
 category: Core
 created: 2026-08-04
 requires: 2929, 3529
-related: Native ETH as ERC-20 Precompile
+related: Native ETH as ERC-20 System Contract
 ---
 
 ## Abstract
@@ -59,7 +59,7 @@ The existing 21 000 gas baseline already privileges top-level native transfers. 
 
 Local rules based solely on opcode identity and the presence of non-zero value are preferred because they are unambiguous, cheap to evaluate, and free of consensus risk. A runtime analysis of call-frame composition would be ambiguous, expensive and itself gameable.
 
-This EIP is independent of the Native ETH as ERC-20 Precompile EIP. The latter supplies a preferential schedule for the `0x20` system-contract methods; the present EIP supplies a general preference for the native opcodes themselves. Together they create a consistent tilt toward native ETH across both the low-level and the ERC-20 interface paths.
+This EIP is independent of the Native ETH as ERC-20 System Contract EIP. The latter supplies a preferential schedule for the `0x20` system-contract methods; the present EIP supplies a general preference for the native opcodes themselves. Together they create a consistent tilt toward native ETH across both the low-level and the ERC-20 interface paths.
 
 ### On resource-cost pricing
 
@@ -79,7 +79,7 @@ Refunds follow ordinary EIP-3529 rules after the factor has been applied. The va
 
 Consensus-breaking; requires a hard fork. Existing gas schedules for pure computation and ordinary ERC-20 operations are unchanged.
 
-The opcode-level factors defined here are self-contained and apply independently of the Native ETH as ERC-20 Precompile EIP.
+The opcode-level factors defined here are self-contained and apply independently of the Native ETH as ERC-20 System Contract EIP.
 
 Clients MUST update gas-cost tables and metering logic for the affected opcodes. Gas estimators, wallets and explorers require corresponding updates. The actual computational and state-access work performed for any individual operation remains identical; only the metered gas numbers change.
 
@@ -95,7 +95,7 @@ Clients MUST update gas-cost tables and metering logic for the affected opcodes.
 2. EIP-3529: Reduction in refunds. https://eips.ethereum.org/EIPS/eip-3529  
 3. EIP-2780: Reduce intrinsic transaction gas. https://eips.ethereum.org/EIPS/eip-2780  
 4. EIP-8038: State-access gas cost update. https://eips.ethereum.org/EIPS/eip-8038  
-5. Native ETH as ERC-20 Precompile (related proposal that defines a preferential schedule for the system contract at address 0x20).  
+5. Native ETH as ERC-20 System Contract (related proposal that defines a preferential schedule for the system contract at address 0x20).  
 6. ERC-20. https://eips.ethereum.org/EIPS/eip-20  
 7. EIP-1559. https://eips.ethereum.org/EIPS/eip-1559  
 
